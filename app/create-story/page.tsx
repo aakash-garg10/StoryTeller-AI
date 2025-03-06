@@ -22,7 +22,7 @@ export interface formDataType {
 export default function CreateStory() {
   const [formData, setFormData] = useState<formDataType>();
 
-  // Function to handle user selection
+  // Function to handle user selection and to Add DATA to the form
   const onHandleUserSelection = (data: fieldData) => {
     console.log(data);
     setFormData((prev: any) => {

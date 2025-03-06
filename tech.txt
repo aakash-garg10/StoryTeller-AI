@@ -1,0 +1,6 @@
+1. Nextjs
+2. Shadcn UI
+3. Tailwindcss
+4. Typescript
+5. Drizzle ORM
+6. Neon
