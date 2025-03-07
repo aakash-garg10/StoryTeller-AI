@@ -8,6 +8,4 @@ const sql = neon(process.env.NEXT_PUBLIC_DATABASE_URL!);
 // Initialize Drizzle ORM with Neon client and schema
 const db = drizzle(sql, { schema });
 
-const result = await db.execute('select 1');
-
 export default db;

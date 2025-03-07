@@ -13,6 +13,8 @@ import { StoryData } from "@/config/schema";
 import db from "@/config/db";
 import { CustomLoader } from "./_components/CustomLoader";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation"; 
 
 const CREATE_STORY_PROMPT = process.env.NEXT_PUBLIC_CREATE_STORY_PROMPT;
 
@@ -30,6 +32,9 @@ export interface formDataType {
 export default function CreateStory() {
   const [formData, setFormData] = useState<formDataType>();
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const notify = (msg:string) => toast(msg);
+  const notifyError = (msg:string) => toast.error(msg);
 
   // Function to handle user selection and to Add DATA to the form
   const onHandleUserSelection = (data: fieldData) => {
@@ -41,6 +46,7 @@ export default function CreateStory() {
   // Function to generate the story
   const GenerateStory = async () => {
     setLoading(true);
+
     //1. GENERATE AI STORY
     const FINAL_PROMPT = CREATE_STORY_PROMPT?.replace("{ageGroup}", formData?.AgeGroup ?? "")
       .replace("{imageStyle}", formData?.ImageStyle ?? "")
@@ -48,27 +54,32 @@ export default function CreateStory() {
       .replace("{storySubject}", formData?.storySubject ?? "");
 
     try {
-      console.log(FINAL_PROMPT); 
+      console.log(FINAL_PROMPT);
       const result = await chatSession.sendMessage(FINAL_PROMPT);
       const story = JSON.parse(result.response.text());
       // console.log(result.response.text());
 
+      //GENERATING THE IMAGE
       const imageResp = await axios.post("/api/generate-image", {
         prompt: "Add text with title:" + story?.title + "in bold text for book cover, " + story?.cover?.image_prompt,
       });
-      console.log("ImageUrl=>",imageResp.data.imageUrl);
+      // console.log("ImageUrl=>",imageResp.data.imageUrl);
 
-      // const resp = await SaveInDB(result.response.text());
-      // console.log(resp);
+      const resp:any = await SaveInDB(result.response.text(), imageResp.data.imageUrl);
+      console.log(resp);
+      notify("Story Generated....");
+      router.replace('/view-story/'+ resp[0]?.storyId);
+
       setLoading(false);
     } catch (error) {
       console.log(error);
+      notifyError("Something went wrong, try again");
       setLoading(false);
     }
   };
 
   //2. SAVE IN DB
-  const SaveInDB = async (story: string) => {
+  const SaveInDB = async (story: string, imgUrl: string) => {
     const recordId = uuid4();
     setLoading(true);
     try {
@@ -81,8 +92,9 @@ export default function CreateStory() {
           AgeGroup: formData?.AgeGroup ?? "",
           ImageStyle: formData?.ImageStyle ?? "",
           output: JSON.parse(story),
+          coverImage: imgUrl,
         })
-        .returning({ stroyId: StoryData.storyId });
+        .returning({ storyId: StoryData.storyId });
       setLoading(false);
       return result;
     } catch (error) {
@@ -92,6 +104,7 @@ export default function CreateStory() {
   };
 
   //3. GENERATE THE IMAGE
+  //see the api folder
 
   return (
     <section className="px-5 pt-32 sm:pt-40 md:pt-40 lg:pt-40 md:px-20 lg:px-40">
@@ -126,7 +139,6 @@ export default function CreateStory() {
         >
           Generate Story
         </Button>
-        <span className="text-sm text-muted-foreground mt-2">1 Credit will be used</span>
       </div>
       <CustomLoader isLoading={loading} />
     </section>

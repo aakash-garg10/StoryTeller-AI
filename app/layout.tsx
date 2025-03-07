@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./_components/Header";
+import { ToastContainer, toast } from 'react-toastify';
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,6 +18,7 @@ export default function RootLayout({
       <body>
         <Header />
         {children}
+        <ToastContainer />
       </body>
     </html>
   );

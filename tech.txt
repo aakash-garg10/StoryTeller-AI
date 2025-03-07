@@ -4,3 +4,8 @@
 4. Typescript
 5. Drizzle ORM
 6. Neon
+7. react-toastify
+8. uuid
+9. edenAi for image
+10. gemini api
+11. react-pageflip
