@@ -21,7 +21,7 @@ function ImageStyle({userSelection}: any) {
      },
      {
        lable: "Water Color",
-       imageUrl: "/waterColor.png",
+       imageUrl: "/watercolor.png",
      },
      {
        lable: "Pixel",
