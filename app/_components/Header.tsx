@@ -24,7 +24,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="text-white text-3xl font-bold">
-              AI - StoryTeller
+              TinyTales - AI
             </Link>
           </div>
 
